@@ -1,0 +1,10 @@
+node_modules
+**/node_modules
+server/dist
+client/dist
+build
+assets-cache
+user
+.env
+.git
+*.log

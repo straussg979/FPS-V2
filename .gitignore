@@ -1,0 +1,13 @@
+node_modules/
+server/dist/
+client/dist/
+build/
+assets-cache/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+.env
+user/
+*.log
+.tools/

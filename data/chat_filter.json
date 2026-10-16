@@ -1,0 +1,14 @@
+{
+ "_comment": [
+  "Words the chat masks and usernames may not contain (server/src/web/chat.ts).",
+  "A word matches a whole chat word after leetspeak is undone (0->o, 1->i, 3->e, 4->a, 5->s, 7->t, @->a, $->s)",
+  "and repeated letters are collapsed (fuuuck -> fuck). 'stems' also match as the start of a word",
+  "(fucking, shitty). Usernames are checked for stems anywhere and words as a whole part (split on _ and -)."
+ ],
+ "stems": ["fuck", "shit", "cunt", "bitch", "bastard", "wank", "twat", "dickhead", "asshole", "arsehole", "motherfuck",
+           "nigger", "nigga", "faggot", "retard", "whore", "slut", "cocksuck", "pussies", "kike", "spastic", "tranny",
+           "rapist", "nazi"],
+ "words": ["ass", "arse", "dick", "cock", "piss", "prick", "pussy", "fag", "fags", "dyke", "spic", "chink", "coon",
+           "gook", "wop", "bollocks", "bellend", "knob", "kys", "rape", "raped", "cum", "jizz", "tits", "boobs", "wtf",
+           "stfu", "fck", "fk", "sht", "biatch"]
+}
