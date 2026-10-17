@@ -13,7 +13,7 @@ export const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", pare
   return e;
 };
 
-const PHASE_NAMES: Record<string, string> = { waiting: "WARMUP", freeze: "BUY", prep: "PREPARATION", live: "", planted: "CHARGE PLANTED",
+const PHASE_NAMES: Record<string, string> = { waiting: "WARMUP", freeze: "BUY PHASE", prep: "PREPARATION", live: "", planted: "CHARGE PLANTED",
   round_end: "ROUND OVER", halftime: "HALF TIME", match_end: "MATCH OVER" };
 
 export interface RadarDot { pos: [number, number]; color: string; big?: boolean; fade?: number; yaw?: number; diamond?: boolean; blink?: boolean }
@@ -174,6 +174,11 @@ export class Hud {
     this.blindStrength = strength;
   }
 
+  /** Keep the reticle on the predicted next bullet's recoil path. */
+  setRecoil(x: number, y: number): void {
+    this.crosshair.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+  }
+
   setScope(on: boolean): void {
     this.scope.classList.toggle("show", on);
     this.crosshair.classList.toggle("hidden", on);
@@ -184,8 +189,9 @@ export class Hud {
     const phase = PHASES[m.phase] ?? "";
     const clock = Math.max(0, m.clock);
     this.clock.textContent = `${Math.floor(clock / 60)}:${String(Math.floor(clock % 60)).padStart(2, "0")}`;
-    this.clock.classList.toggle("low", phase === "live" && clock < 10);
+    this.clock.classList.toggle("low", (phase === "live" && clock < 10) || (phase === "freeze" && clock <= 3));
     this.phase.textContent = PHASE_NAMES[phase] ?? phase;
+    this.phase.classList.toggle("buy", phase === "freeze");
     const side0 = m.team0_side === 0 ? "ATK" : "DEF", side1 = m.team0_side === 0 ? "DEF" : "ATK";
     this.scoreL.textContent = `${side0} ${m.score[0]}`;
     this.scoreR.textContent = `${m.score[1]} ${side1}`;
