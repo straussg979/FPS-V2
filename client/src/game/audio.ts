@@ -165,8 +165,8 @@ export class AudioSystem {
   footstep(surface: string, pos: V, loudness: number, own = false): void {
     if (!this.ctx || loudness <= 0.01) return;
     const name = this.variants(`step_${surface}`) ? `step_${surface}` : "step_default";
-    if (own) { void this.play(this.pick(name), { volume: 0.35 * loudness, bus: this.effects }); return; }
-    void this.play(this.pick(name), { pos, volume: loudness, cat: "step", occluded: this.occluded(pos) });
+    if (own) { void this.play(this.pick(name), { volume: 0.2 * loudness, bus: this.effects }); return; }
+    void this.play(this.pick(name), { pos, volume: 0.65 * loudness, cat: "step", occluded: this.occluded(pos) });
   }
 
   ui2d(name: string, volume = 0.7): void {
