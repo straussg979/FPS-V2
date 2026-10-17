@@ -37,6 +37,8 @@ export class LocalWeapons {
   private grenadePhase: null | "priming" | "thrown" = null;
   private grenadeT = 0;
   private shotCount = 0;
+  private recoilIndex = 0;
+  private lastShot = -Infinity;
 
   constructor(private vm: Viewmodel, private hooks: WeaponHooks) {}
 
@@ -52,7 +54,16 @@ export class LocalWeapons {
     this.drawUntil = this.time + drawTime;
     this.reloadUntil = 0;
     this.grenadePhase = null;
+    this.recoilIndex = 0;
+    this.lastShot = -Infinity;
     void this.vm.equip(d.model, d.cls, drawTime);
+  }
+
+  /** Pattern position of the next shot, in degrees relative to the centre of the screen. */
+  recoilOffset(): [number, number] {
+    if (this.kind !== "gun") return [0, 0];
+    const pattern: number[][] = this.def?.recoil?.pattern ?? [[0, 0]];
+    return pattern[Math.min(Math.floor(this.recoilIndex), pattern.length - 1)] as [number, number];
   }
 
   /** Ammo to show: the server's count less the shots it has not acknowledged yet. */
@@ -64,6 +75,9 @@ export class LocalWeapons {
   /** One command tick (1/64 s). */
   tick(dt: number, cmd: CmdView, self: any, ack: number, canAct: boolean): void {
     this.time += dt;
+    if (this.kind === "gun" && this.time - this.lastShot > 1.25 * 60 / this.def.rpm) {
+      this.recoilIndex = Math.max(0, this.recoilIndex - this.def.recoil.recovery * dt);
+    }
     if (!canAct || (!this.def && this.kind !== "bomb")) { this.fireWasDown = cmd.down("fire"); return; }
     const now = this.time;
     const fire = cmd.down("fire");
@@ -82,6 +96,8 @@ export class LocalWeapons {
           this.nextFire = now + 60 / d.rpm;
           this.shots.push({ seq: cmd.seq });
           this.shotCount++;
+          this.lastShot = now;
+          this.recoilIndex = Math.min(Math.floor(this.recoilIndex) + 1, d.recoil.pattern.length - 1);
           this.vm.onFire(d.recoil ? d.recoil.punch : 1, ammo - 1 === 0);
           this.hooks.fire(d, ammo - 1 === 0, (d.tracer_every ?? 0) > 0 && this.shotCount % d.tracer_every === 0);
           if (d.fire_mode === "pump") this.vm.playPart("pump_cycle", Math.min(60 / d.rpm * 0.8, 0.6));
