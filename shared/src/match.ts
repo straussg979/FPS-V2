@@ -147,14 +147,11 @@ export class Match {
   get prepTime(): number { return Number(this.timers.prep_time ?? 0); }
 
   canBuy(): boolean {
-    if (this.phase === "freeze" || this.phase === "prep") return true;
-    return this.isLive && this.roundClock < Number(this.timers.buy_time);
+    return this.phase === "freeze" && this.phaseTime < Number(this.timers.buy_time);
   }
 
   buyTimeLeft(): number {
-    if (this.phase === "freeze" || this.phase === "prep") return Number(this.timers.buy_time);
-    if (this.isLive) return Math.max(Number(this.timers.buy_time) - this.roundClock, 0);
-    return 0;
+    return this.phase === "freeze" ? Math.max(Number(this.timers.buy_time) - this.phaseTime, 0) : 0;
   }
 
   clock(): number {
