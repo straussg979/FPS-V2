@@ -758,7 +758,13 @@ class Game {
         this.radarSpots.clear();
         this.audio.ui2d("sting_round_start", 0.5);
         break;
-      case "phase": if (ev.phase === "live") this.hud.message("GO", 1.2); break;
+      case "phase":
+        if (ev.phase === "freeze") this.hud.message("BUY PHASE · 10 SECONDS", 2);
+        else if (ev.phase === "prep" || ev.phase === "live") {
+          if (this.buyOpen) this.toggleBuy(false);
+          this.hud.message(ev.phase === "live" ? "BUY PHASE ENDED · GO" : "BUY PHASE ENDED", 2);
+        }
+        break;
       case "bomb_planted": this.hud.message("Charge planted", 2.5); this.audio.ui2d("sting_planted", 0.6); break;
       case "bomb_defused": this.hud.message("Charge defused", 2.5); this.audio.ui2d("bomb_defused", 0.6); break;
       case "halftime": this.hud.message("Half time · sides swap", 4); break;
@@ -1199,6 +1205,9 @@ class Game {
     this.hud.setBadges(alive && !!this.selfFlags.charge, alive && !!this.selfFlags.kit, alive && !!this.selfFlags.helmet);
     this.hud.radarOptions = { show: this.settings.get("radar"), rotate: this.settings.get("radarRotate"), zoom: this.settings.get("radarZoom") };
     this.updateSpread(dt, alive);
+    const [rx, ry] = alive ? this.weapons.recoilOffset() : [0, 0];
+    const aimScale = (this.height / 2) / Math.tan(THREE.MathUtils.degToRad(this.world.camera.fov) / 2);
+    this.hud.setRecoil(Math.tan(THREE.MathUtils.degToRad(rx)) * aimScale, -Math.tan(THREE.MathUtils.degToRad(ry)) * aimScale);
     this.hud.setScope(this.scoped);
     const rtt = this.net.rtt === null ? "?" : Math.round(this.net.rtt);
     const status = this.settings.get("showFps") ? `${this.fps} fps · ${rtt} ms · ${this.net.kbps().toFixed(1)} KB/s` : "";
@@ -1272,7 +1281,7 @@ class Game {
     (s.grenades ?? []).forEach((n: number, i: number) => { if (n > 0) owned.add(GRENADE_KEYS[i]); });
     const cats = ((this.welcome.shop ?? {})[side] ?? []).map(([title, list]: [string, any[]]) => [title, list.map((it) => ({
       ...it, owned: owned.has(it.key) && it.kind !== "equipment", disabled: (s.money ?? 0) < it.price }))]);
-    return { money: s.money ?? 0, categories: cats, note: this.selfFlags.can_buy ? "" : "You can only buy in your spawn during the buy time.",
+    return { money: s.money ?? 0, categories: cats, note: this.selfFlags.can_buy ? "" : "Buying is only available in your spawn during the 10-second buy phase.",
       onBuy: (k) => this.buyItem(k), onSell: (k) => this.sellItem(k), specialists: this.specialistChoices(side, s.gadget ?? 0),
       onSpecialist: (k) => void this.net.control("specialist", { item: k }) };
   }
