@@ -8,7 +8,7 @@
   "'duel' layout (maps/data/<map>.json modes.duel): one bomb site, one spawn per side, player-clip",
   "walls closing the rest."
  ],
- "timers": {"freeze_time": 5.0, "prep_time": 0.0, "buy_time": 15.0, "round_time": 75.0, "bomb_timer": 35.0,
+ "timers": {"freeze_time": 10.0, "prep_time": 0.0, "buy_time": 10.0, "round_time": 75.0, "bomb_timer": 35.0,
             "round_end_delay": 4.0, "halftime_delay": 6.0},
  "rounds": {"max_rounds": 16, "halftime_after": 8, "win_score": 9,
             "overtime": {"lead": 2, "swap_every": 2, "money": 6000, "max_rounds": 30}},
