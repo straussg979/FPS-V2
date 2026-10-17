@@ -395,8 +395,9 @@ export class World {
     const bounce = Number(env.bounce_ground ?? 0.5);
     surfaceUniforms.uBounceColor.value.setRGB(gc[0] / gl * 0.34 * sc[0], gc[1] / gl * 0.34 * sc[1], gc[2] / gl * 0.34 * sc[2]).multiplyScalar(intensity * bounce * 0.5);
     surfaceUniforms.uDustColor.value.setRGB(...((env.dust_color ?? [0.62, 0.53, 0.42]) as [number, number, number]));
-    const fog = env.fog ?? {};
-    this.scene.fog = new THREE.FogExp2(new THREE.Color(0.66, 0.72, 0.80), fog.density ?? 0.0028);
+    const fog = { ...env.fog, density: (env.fog?.density ?? 0.0028) * 0.65,
+      max_opacity: (env.fog?.max_opacity ?? 0.85) * 0.8 };
+    this.scene.fog = new THREE.FogExp2(new THREE.Color(0.66, 0.72, 0.80), fog.density);
     installHeightFog(fog, this.sunDirWorld, sc);
   }
 
